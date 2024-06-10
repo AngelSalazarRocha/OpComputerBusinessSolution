@@ -1,4 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using OPCBusinessSolution.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("ContextConnection") ?? throw new InvalidOperationException("Connection string 'ContextConnection' not found");
+
+builder.Services.AddDbContext<MonitorBucklandContext>(options => options.UseSqlServer(connectionString));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

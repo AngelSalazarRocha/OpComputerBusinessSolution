@@ -1,15 +1,136 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<OPCBusinessSolution.Models.Mbpedimento>
+
+@{
+    ViewData["Title"] = "Monitor Buckland";
+    DateTime fechaInicio = ViewBag.FechaInicio ?? DateTime.Now;
+    DateTime fechaFin = ViewBag.FechaFin ?? DateTime.Now;
 }
 
 <div class="p-4 pt-5">
-    <h1 class="display-5">
+
+    <h1 class="">
         Monitor Buckland
     </h1>
 
-    <div class="d-flex">
+    <form asp-controller="Home" asp-action="Index" class="d-flex justify-content-between mb-5">
         <div class="">
-
+            <div class="d-flex">
+                <div class="form-group me-0 me-sm-3">
+                    <label for="FechaInicio" class="form-label">Fecha Inicio</label>
+                    <input type="date" name="FechaInicio" class="form-control" value="@fechaInicio.ToString("yyyy-MM-dd")"/>
+                </div>
+                <div class="form-group me-0 me-sm-4">
+                    <label for="FechaFin" class="form-label">Fecha Inicio</label>
+                    <input type="date" name="FechaFin" class="form-control" value="@fechaFin.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" name="AutoUpdateBit" value="@ViewBag.AutoUpdate" class="form-check-input" role="switch" />
+                        <label for="AutoUpdateBit" class="form-check-label">Auto Update</label>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+        <div class="d-flex">
+            <div class="me-0 me-sm-1">
+                <button type="submit" class="btn btn-lg btn-outline-primary">
+                    <img src="img/magnifying-glass-solid.svg" alt="s" class="icon" asp-append-version="true" />
+                    Buscar
+                </button>
+            </div>
+            <div class="">
+                <button id="btnDescargar" type="button" class="btn btn-lg btn-outline-primary d-flex">
+                    <img src="img/cloud-arrow-down-solid.svg" alt="c" class="icon mt-2" asp-append-version="true" />
+                    Descargar
+                </button>
+            </div>
+        </div>
+    </form>
+
+
+    @if (ViewBag.FechaInicio == null && ViewBag.FechaFin == null)
+    {
+        <div class="alert alert-light text-center border-light-2 col-12 rounded-0 py-2" role="alert">
+            <span class="text-danger">
+                Aplique los filtros y haga click en buscar
+            </span>
+        </div>
+    }
+    else
+    {
+        if (Model.Count() == 0)
+        {
+            <div class="alert alert-light text-center border-light-2 col-12 rounded-0 py-2" role="alert">
+                <span class="text-danger">
+                    No hay datos disponibles
+                </span>
+            </div>
+        }
+        else
+        {
+            <div class="">
+                <table class="table table-hover" id="tblPedimento">
+                    <thead>
+                        <tr class="bg-success-2 text-black">
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Id)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Cliente)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.ClavePedimento)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.TipoOperacion)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Referencia)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Pedimento)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Remesa)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Caja)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Sello)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Doda)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Cpfolios)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.CruceSoia)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.Usuario)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.TiempoReciboBgts)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.TiempoAcgconfirmado)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.FechaCcp)</th>
+                            <th class="text-center">@Html.DisplayNameFor(model => model.FechaRemesa)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var item in Model)
+                        {
+                            <tr>
+                                <th>@Html.DisplayFor(modelItem => item.Id)</th>
+                                <td>@Html.DisplayFor(modelItem => item.Cliente)</td>
+                                <td>@Html.DisplayFor(modelItem => item.ClavePedimento)</td>
+                                @if (item.TipoOperacion)
+                                {
+                                    <td>
+                                        EXPO
+                                    </td>
+                                } 
+                                else
+                                {
+                                    <td>
+                                        IMPO
+                                    </td>
+                                }
+                                <td>@Html.DisplayFor(modelItem => item.Referencia)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Pedimento)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Remesa)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Caja)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Sello)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Doda)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Cpfolios)</td>
+                                <td>@Html.DisplayFor(modelItem => item.CruceSoia)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Usuario)</td>
+                                <td>@item.TiempoReciboBgts.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>@Html.DisplayFor(modelItem => item.TiempoAcgconfirmado)</td>
+                                <td>@Html.DisplayFor(modelItem => item.FechaCcp)</td>
+                                <td>@Html.DisplayFor(modelItem => item.FechaRemesa)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <span>Registros: @Model.Count()</span>
+        }
+    }
+
 </div>
