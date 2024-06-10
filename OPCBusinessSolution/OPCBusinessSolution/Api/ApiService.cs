@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Routing;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc.Routing;
 using System.Web;
 
 namespace OPCBusinessSolution.Api
@@ -12,17 +13,37 @@ namespace OPCBusinessSolution.Api
             _httpClient = httpClientFactory.CreateClient("ApiOPCBS");
         }
 
-        public async Task<T> GetAsync<T>(string endpoint, Dictionary<string, string> queryParams = null)
+        public async Task<string?> GetAsync(string endpoint, Dictionary<string, string> queryParams = null)
         {
             string url = endpoint;
             if (queryParams != null)
             {
                 url = UrlHelper.AddQueryParameters(endpoint, queryParams);
             }
-            var response = await _httpClient.GetAsync(endpoint);
-            response.EnsureSuccessStatusCode();
-            var data = await response.Content.ReadFromJsonAsync<T>();
-            return data;
+
+            try
+            {
+                var response = await _httpClient.GetAsync(_httpClient.BaseAddress + url);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return "404";
+                }
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string data = await response.Content.ReadAsStringAsync();
+                    return data;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 

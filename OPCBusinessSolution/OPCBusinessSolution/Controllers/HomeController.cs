@@ -5,19 +5,20 @@ using OPCBusinessSolution.Models;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace OPCBusinessSolution.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly MonitorBucklandContext _context;
+        //private readonly MonitorBucklandContext _context;
         private readonly ApiService _apiService;
 
-        public HomeController(ILogger<HomeController> logger, MonitorBucklandContext context, ApiService apiService)
+        public HomeController(ILogger<HomeController> logger, ApiService apiService) //MonitorBucklandContext context
         {
             _logger = logger;
-            _context = context;
+            //_context = context;
             _apiService = apiService;
         }
 
@@ -44,7 +45,7 @@ namespace OPCBusinessSolution.Controllers
         {
             if (AutoUpdateBit)
             {
-                // implement an auto update function
+                // implement an auto update function using signal R
 
                 ViewBag.AutoUpdate = true;
             }
@@ -53,20 +54,6 @@ namespace OPCBusinessSolution.Controllers
 
         private async Task<ICollection<MBPedimentoViewModel>> ApplyFilter(DateTime? FechaInicio, DateTime? FechaFin)
         {
-            //if (FechaFin == null)
-            //{
-            //    //return (ICollection<Mbpedimento>)await _context.Mbpedimentos.Where(p => p.TiempoReciboBgts.Date == FechaInicio)
-            //    //    .ToListAsync();
-            //}
-            //else
-            //{
-            //    ViewBag.FechaFin = FechaFin;
-            //    //return (ICollection<Mbpedimento>)await _context.Mbpedimentos
-            //    //    .Where(p => p.TiempoReciboBgts.Date >= FechaInicio 
-            //    //        && p.TiempoReciboBgts.Date <= FechaFin)
-            //    //    .ToListAsync();
-            //}
-
             var queryParams = new Dictionary<string, string>();
 
             if (FechaInicio.HasValue)
@@ -81,8 +68,27 @@ namespace OPCBusinessSolution.Controllers
                 queryParams.Add("FechaFin", FechaFin.Value.ToString("yyyy-MM-dd"));
             }
 
-            var mbPedimento = await _apiService.GetAsync<ICollection<MBPedimentoViewModel>>("MocklandMonitor", queryParams);
-            return mbPedimento;
+            var jsonData = await _apiService.GetAsync("MocklandMonitor", queryParams);
+
+            if (jsonData != null)
+            {
+                if (jsonData == "404")
+                {
+                    return new List<MBPedimentoViewModel>();
+                }
+                else
+                {
+                    // Deserializa la cadena JSON a un objeto de tipo MBPedimentoViewModel
+                    var mbPedimento = JsonSerializer.Deserialize<List<MBPedimentoViewModel>>(jsonData);
+
+                    return mbPedimento;
+                }
+            }
+            else
+            {
+                // Manejar el caso en que la respuesta no fue exitosa
+                return new List<MBPedimentoViewModel>();
+            }
         }
     }
 }
