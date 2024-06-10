@@ -15,14 +15,14 @@ public partial class MonitorBucklandContext : DbContext
     {
     }
 
-    public virtual DbSet<Mbpedimento> Mbpedimentos { get; set; }
+    public virtual DbSet<MBPedimentoViewModel> Mbpedimentos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("name=ContextConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Mbpedimento>(entity =>
+        modelBuilder.Entity<MBPedimentoViewModel>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("pk_id_MBPedimento");
 

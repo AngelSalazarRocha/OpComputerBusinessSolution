@@ -51,7 +51,7 @@ namespace OPCBusinessSolution.Controllers
             return View("Home");
         }
 
-        private async Task<ICollection<Mbpedimento>> ApplyFilter(DateTime? FechaInicio, DateTime? FechaFin)
+        private async Task<ICollection<MBPedimentoViewModel>> ApplyFilter(DateTime? FechaInicio, DateTime? FechaFin)
         {
             //if (FechaFin == null)
             //{
@@ -81,7 +81,7 @@ namespace OPCBusinessSolution.Controllers
                 queryParams.Add("FechaFin", FechaFin.Value.ToString("yyyy-MM-dd"));
             }
 
-            var mbPedimento = await _apiService.GetAsync<ICollection<Mbpedimento>>("MocklandMonitor", queryParams);
+            var mbPedimento = await _apiService.GetAsync<ICollection<MBPedimentoViewModel>>("MocklandMonitor", queryParams);
             return mbPedimento;
         }
     }

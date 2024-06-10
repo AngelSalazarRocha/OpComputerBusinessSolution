@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace OPCBusinessSolution.Models;
 
-public partial class Mbpedimento
+public partial class MBPedimentoViewModel
 {
     [DisplayName("#")]
     public int Id { get; set; }
