@@ -10,3 +10,5 @@ Le invito a quien corresponda a revisar principalmente "Views/Home/HomeControlle
 Dado que no hay datos obtenidos del "api"
 
 Solo se podrá ejecutar la aplicacion con las primeras dos capturas, sin embargo comparto una captura con el mentodo anterior con el que obtenia datos:
+
+![App con datos](/OPCBusinessSolution/OPCBusinessSolution/wwwroot/img/CapturaDeAppConDatos.png)
