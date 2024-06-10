@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OPCBusinessSolution.Api;
 using OPCBusinessSolution.Models;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,11 +12,13 @@ namespace OPCBusinessSolution.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly MonitorBucklandContext _context;
+        private readonly ApiService _apiService;
 
-        public HomeController(ILogger<HomeController> logger, MonitorBucklandContext context)
+        public HomeController(ILogger<HomeController> logger, MonitorBucklandContext context, ApiService apiService)
         {
             _logger = logger;
             _context = context;
+            _apiService = apiService;
         }
 
         public async Task<IActionResult> Index(DateTime? FechaInicio, DateTime? FechaFin)
@@ -41,7 +44,7 @@ namespace OPCBusinessSolution.Controllers
         {
             if (AutoUpdateBit)
             {
-                // implement an auto update function ?
+                // implement an auto update function
 
                 ViewBag.AutoUpdate = true;
             }
@@ -50,20 +53,36 @@ namespace OPCBusinessSolution.Controllers
 
         private async Task<ICollection<Mbpedimento>> ApplyFilter(DateTime? FechaInicio, DateTime? FechaFin)
         {
-            ViewBag.FechaInicio = FechaInicio;
-            if (FechaFin == null)
+            //if (FechaFin == null)
+            //{
+            //    //return (ICollection<Mbpedimento>)await _context.Mbpedimentos.Where(p => p.TiempoReciboBgts.Date == FechaInicio)
+            //    //    .ToListAsync();
+            //}
+            //else
+            //{
+            //    ViewBag.FechaFin = FechaFin;
+            //    //return (ICollection<Mbpedimento>)await _context.Mbpedimentos
+            //    //    .Where(p => p.TiempoReciboBgts.Date >= FechaInicio 
+            //    //        && p.TiempoReciboBgts.Date <= FechaFin)
+            //    //    .ToListAsync();
+            //}
+
+            var queryParams = new Dictionary<string, string>();
+
+            if (FechaInicio.HasValue)
             {
-                return (ICollection<Mbpedimento>)await _context.Mbpedimentos.Where(p => p.TiempoReciboBgts.Date == FechaInicio)
-                    .ToListAsync();
+                ViewBag.FechaInicio = FechaInicio;
+                queryParams.Add("FechaInicio", FechaInicio.Value.ToString("yyyy-MM-dd"));
             }
-            else
+
+            if (FechaFin.HasValue)
             {
                 ViewBag.FechaFin = FechaFin;
-                return (ICollection<Mbpedimento>)await _context.Mbpedimentos
-                    .Where(p => p.TiempoReciboBgts.Date >= FechaInicio 
-                        && p.TiempoReciboBgts.Date <= FechaFin)
-                    .ToListAsync();
+                queryParams.Add("FechaFin", FechaFin.Value.ToString("yyyy-MM-dd"));
             }
+
+            var mbPedimento = await _apiService.GetAsync<ICollection<Mbpedimento>>("MocklandMonitor", queryParams);
+            return mbPedimento;
         }
     }
 }

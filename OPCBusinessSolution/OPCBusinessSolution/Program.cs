@@ -1,13 +1,19 @@
-using Microsoft.EntityFrameworkCore;
-using OPCBusinessSolution.Models;
+using OPCBusinessSolution.Api;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("ContextConnection") ?? throw new InvalidOperationException("Connection string 'ContextConnection' not found");
 
-builder.Services.AddDbContext<MonitorBucklandContext>(options => options.UseSqlServer(connectionString));
+// Configuracion del api mediante HttpClient
+builder.Services.AddHttpClient("ApiOPCBS", client =>
+{
+    client.BaseAddress = new Uri("https://api.opcbsolutionsexample.com/");
+    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+});
 
-// Add services to the container.
+// mvc services
 builder.Services.AddControllersWithViews();
+
+// Registro del servicio de la clase Api
+builder.Services.AddTransient<ApiService>();
 
 var app = builder.Build();
 
@@ -21,11 +27,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
